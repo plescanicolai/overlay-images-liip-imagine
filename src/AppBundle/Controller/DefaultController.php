@@ -58,8 +58,11 @@ class DefaultController extends Controller
 
             $imageUploaded = realpath($this->getParameter('kernel.root_dir').'/../web/images/'.$fileName);
             $rama = imagecreatefrompng(realpath($this->getParameter('kernel.root_dir').'/../web/images/rame1.png'));
+
             $ramaWidth = imagesx($rama);
             $ramaHeight = imagesy($rama);
+            $this->resizeImage($imageUploaded, realpath($this->getParameter('kernel.root_dir').'/../web/images/'), $fileName, $ramaHeight, $ramaWidth);
+
             if ($extension == 'gif') {
                 $image = imagecreatefromgif($imageUploaded);
             } elseif ($extension == "jpeg" or $extension == "jpg") {
@@ -69,9 +72,8 @@ class DefaultController extends Controller
             } else {
                 die("wrong extension");
             }
-            $size = getimagesize($imageUploaded);
-            imagecopyresampled($image, $image, 0, 0, 0, 0, $ramaWidth, $ramaHeight, $ramaWidth, $ramaHeight);
-            imagecopyresampled($image, $rama, $size[0] - $ramaWidth - 200, $size[1] - $ramaHeight, 0, 0, $ramaWidth, $ramaHeight, $ramaWidth, $ramaHeight);
+
+            imagecopyresampled($image, $rama, 0, 0, 0, 0, $ramaWidth, $ramaHeight, $ramaWidth, $ramaHeight);
 
             switch ($extension) {
                 case 'png':
@@ -87,7 +89,6 @@ class DefaultController extends Controller
                 default:
                     break;
             }
-//            imagejpeg($image, $imageUploaded, 90);
 
             $response = new BinaryFileResponse($imageUploaded);
             $response->headers->set('Content-Type', 'image/png');
@@ -102,25 +103,14 @@ class DefaultController extends Controller
         ]);
     }
 
-    public function resizeImage($image, $newPath, $name, $height = 0, $width = 0)
+    private function resizeImage($image, $newPath, $name, $height = 0, $width = 0)
     {
-        $imageDetails = $this->getImageDetails($image);
-        $heightOrig = $imageDetails->height;
-        $widthOrig = $imageDetails->width;
-        $fileExtention = $imageDetails->extension;
-        $ratio = $imageDetails->ratio;
+        $size = getimagesize($image);
+        $heightOrig = $size[1];
+        $widthOrig = $size[0];
+
+        $fileExtention = 'jpg';
         $jpegQuality = 75;
-
-        //Resize dimensions are bigger than original image, stop processing
-        if ($width > $widthOrig && $height > $heightOrig) {
-            return false;
-        }
-
-        if ($height > 0) {
-            $width = $height * $ratio;
-        } elseif ($width > 0) {
-            $height = $width / $ratio;
-        }
         $width = round($width);
         $height = round($height);
 
@@ -145,7 +135,7 @@ class DefaultController extends Controller
 
         imagecopyresampled($gdImageDest, $gdImageSrc, 0, 0, 0, 0, $width, $height, $widthOrig, $heightOrig);
 
-        $newFileName = $newPath.'/'.$name.".".$fileExtention;
+        $newFileName = $newPath.'/'.$name;
 
         switch ($fileExtention) {
             case 'png':

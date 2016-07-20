@@ -9,7 +9,6 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class DefaultController
@@ -32,8 +31,15 @@ class DefaultController extends Controller
      */
     public function latestBlocAction()
     {
+        $r = $this->get('liip_imagine.cache.manager')->getBrowserPath(realpath($this->getParameter('kernel.root_dir').'/../web/images/123.jpg'), 'background_color_filter');
+
+        $runtimeConfig = ['thumbnail' => ['size' => [100, 100]]];
+//        $runtimeConfig['watermark'] = ['image' => $r];
+
         return $this->render('default/last_bloc.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..'),
+            'r' => $r,
+            'runtimeConfig' => $runtimeConfig,
         ]);
     }
 

@@ -70,9 +70,10 @@ swiftmailer:
 liip_imagine:
     filter_sets:
         background_color_filter:
-            cache: ~
+#            cache: ~
 #            data_loader: stream.shooting
             filters:
+                watermark: { image: ~ }
 #                grayscale: ~
 #                background: { color: '#0000F0' }
 #                relative_resize: { heighten: 60 }
@@ -83,7 +84,7 @@ liip_imagine:
 #                    file: %kernel.root_dir%/Resources/water.jpg
 #                    size: 0.5
 #                    position: center
-                thumbnail: { size: [120, 80], mode: outbound }
+                thumbnail: { size: [400, 300], mode: outbound }
 #                  watermark:
 #                      file: %kernel.root_dir%/Resources/misc/watermark.png
 #                      placement: { position: center, resize: stretch, space: "10%" }

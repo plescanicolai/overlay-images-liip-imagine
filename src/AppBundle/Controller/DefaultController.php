@@ -175,14 +175,14 @@ class DefaultController extends Controller
         $heightOrig = $size[1];
         $widthOrig = $size[0];
 
-        $fileExtention = 'jpg';
+        $fileExtension = 'jpg';
         $jpegQuality = 75;
         $width = round($width);
         $height = round($height);
 
         $gdImageDest = imagecreatetruecolor($width, $height);
         $gdImageSrc = null;
-        switch ($fileExtention) {
+        switch ($fileExtension) {
             case 'png':
                 $gdImageSrc = imagecreatefrompng($image);
                 imagealphablending($gdImageDest, false);
@@ -203,7 +203,7 @@ class DefaultController extends Controller
 
         $newFileName = $newPath.'/'.$name;
 
-        switch ($fileExtention) {
+        switch ($fileExtension) {
             case 'png':
                 imagepng($gdImageDest, $newFileName);
                 break;

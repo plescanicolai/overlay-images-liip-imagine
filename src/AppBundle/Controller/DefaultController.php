@@ -29,16 +29,26 @@ class DefaultController extends Controller
     /**
      * @Route("last", name="last_bloc")
      */
-    public function latestBlocAction()
+    public function latestBlocAction(Request $request)
     {
-        $r = $this->get('liip_imagine.cache.manager')->getBrowserPath(realpath($this->getParameter('kernel.root_dir').'/../web/images/123.jpg'), 'background_color_filter');
+//        $r = $this->get('liip_imagine.cache.manager')->getBrowserPath(realpath($this->getParameter('kernel.root_dir').'/../web/images/123.jpg'), 'background_color_filter');
+
+//        $this->get('liip_imagine.controller')->filterAction($request, 'http://cdn.arstechnica.net/wp-content/uploads/2016/02/5718897981_10faa45ac3_b-640x624.jpg', 'background_color_filter');
+//        $browserPath = $this->get('liip_imagine.cache.manager')->getBrowserPath(realpath($this->getParameter('kernel.root_dir').'/../web/images/123.jpg'), 'background_color_filter');
+//
+//        $content = file_get_contents($browserPath);
+//        $response = new BinaryFileResponse($content);
+//        $response->headers->set('Content-Type', 'image/png');
+//        $response->headers->set('Content-Transfer-Encoding', 'binary');
+//        $response->headers->set('Content-Disposition', 'attachment; filename=asas.jpg');
+//
+//        return $response;
 
         $runtimeConfig = ['thumbnail' => ['size' => [100, 100]]];
 //        $runtimeConfig['watermark'] = ['image' => $r];
 
         return $this->render('default/last_bloc.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..'),
-            'r' => $r,
             'runtimeConfig' => $runtimeConfig,
         ]);
     }
@@ -63,7 +73,56 @@ class DefaultController extends Controller
             $image1->move(realpath($this->getParameter('kernel.root_dir').'/../web/images/'), $fileName);
 
             $imageUploaded = realpath($this->getParameter('kernel.root_dir').'/../web/images/'.$fileName);
-            $rama = imagecreatefrompng(realpath($this->getParameter('kernel.root_dir').'/../web/images/rame1.png'));
+            $rama = imagecreatefrompng(realpath($this->getParameter('kernel.root_dir').'/../web/images/rame2.png'));
+
+            $ramaWidth = imagesx($rama);
+            $ramaHeight = imagesy($rama);
+            $this->resizeImage($imageUploaded, realpath($this->getParameter('kernel.root_dir').'/../web/images/'), $fileName, $ramaHeight, $ramaWidth);
+
+            if ($extension == 'gif') {
+                $image = imagecreatefromgif($imageUploaded);
+            } elseif ($extension == "jpeg" or $extension == "jpg") {
+                $image = imagecreatefromjpeg($imageUploaded);
+            } elseif ($extension == 'png') {
+                $image = imagecreatefrompng($imageUploaded);
+            } else {
+                die("wrong extension");
+            }
+
+            imagecopyresampled($image, $rama, 0, 0, 0, 0, $ramaWidth, $ramaHeight, $ramaWidth, $ramaHeight);
+
+            switch ($extension) {
+                case 'png':
+                    imagepng($image, $imageUploaded);
+                    break;
+                case 'jpeg':
+                case 'jpg':
+                    imagejpeg($image, $imageUploaded, 90);
+                    break;
+                case 'gif':
+                    imagegif($image, $imageUploaded);
+                    break;
+                default:
+                    break;
+            }
+
+            $response = new BinaryFileResponse($imageUploaded);
+            $response->headers->set('Content-Type', 'image/png');
+            $response->headers->set('Content-Transfer-Encoding', 'binary');
+            $response->headers->set('Content-Disposition', 'attachment; filename='.$fileName);
+
+            return $response;
+        }
+        if ($verticalForm->isSubmitted() && $verticalForm->isValid()) {
+            $data = $verticalForm->getData();
+            /** @var UploadedFile $image1 */
+            $image1 = $data['vertical'];
+            $extension = $image1->guessExtension();
+            $fileName = md5(uniqid()).'.'.$extension;
+            $image1->move(realpath($this->getParameter('kernel.root_dir').'/../web/images/'), $fileName);
+
+            $imageUploaded = realpath($this->getParameter('kernel.root_dir').'/../web/images/'.$fileName);
+            $rama = imagecreatefrompng(realpath($this->getParameter('kernel.root_dir').'/../web/images/rame3.png'));
 
             $ramaWidth = imagesx($rama);
             $ramaHeight = imagesy($rama);
@@ -106,6 +165,7 @@ class DefaultController extends Controller
 
         return $this->render('default/image.html.twig', ['horizontalForma' => $horizontalForm->createView(),
                 'verticalForm' => $verticalForm->createView(),
+                'horizontalForm' => $horizontalForm->createView(),
         ]);
     }
 

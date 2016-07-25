@@ -2,8 +2,21 @@
 
 {% block  body %}
     {{ form_start(horizontalForma) }}
+        {{ form_label(horizontalForma.horizontal) }}
+        {{ form_widget(horizontalForma.horizontal) }}
     {{ form_end(horizontalForma) }}
 
     {{ form_start(verticalForm) }}
+        {{ form_label(verticalForm.vertical) }}
+        {{ form_widget(verticalForm.vertical) }}
     {{ form_end(verticalForm) }}
+
+
+{% endblock %}
+{% block execjs %}
+    <script type="text/javascript">
+        $("input[type = 'file']").change(function () {
+            this.form.submit();
+        })
+    </script>
 {% endblock %}

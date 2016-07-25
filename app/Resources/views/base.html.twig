@@ -12,6 +12,11 @@
         {#{{ knp_menu_render('AppBundle:Builder:mainMenu') }}#}
     {% endblock %}
     {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+
+    {% block javascripts %}
+        <script type="text/javascript" src="{{ asset('public/js/jquery-1.10.2.min.js') }}"></script>
+    {% endblock %}
+
+    {% block execjs %}{% endblock %}
     </body>
 </html>

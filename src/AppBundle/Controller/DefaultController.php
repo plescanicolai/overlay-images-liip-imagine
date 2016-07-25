@@ -23,8 +23,8 @@ class DefaultController extends Controller
      */
     public function imageAction(Request $request)
     {
-        $horizontalForm = $this->createFormBuilder()->add('horizontal', FileType::class)->add('submit', SubmitType::class)->getForm();
-        $verticalForm = $this->createFormBuilder()->add('vertical', FileType::class)->add('submit', SubmitType::class)->getForm();
+        $horizontalForm = $this->createFormBuilder()->add('horizontal', FileType::class)->getForm();
+        $verticalForm = $this->createFormBuilder()->add('vertical', FileType::class)->getForm();
         $horizontalForm->handleRequest($request);
         $verticalForm->handleRequest($request);
         if ($horizontalForm->isSubmitted() && $horizontalForm->isValid()) {

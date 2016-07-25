@@ -3,9 +3,9 @@
 namespace AppBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,51 +17,14 @@ use Symfony\Component\HttpFoundation\Request;
 class DefaultController extends Controller
 {
     /**
-     * @Route("/", name="homepage")
-     */
-    public function indexAction(Request $request)
-    {
-        return $this->render('default/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..'),
-        ]);
-    }
-
-    /**
-     * @Route("last", name="last_bloc")
-     */
-    public function latestBlocAction(Request $request)
-    {
-//        $r = $this->get('liip_imagine.cache.manager')->getBrowserPath(realpath($this->getParameter('kernel.root_dir').'/../web/images/123.jpg'), 'background_color_filter');
-
-//        $this->get('liip_imagine.controller')->filterAction($request, 'http://cdn.arstechnica.net/wp-content/uploads/2016/02/5718897981_10faa45ac3_b-640x624.jpg', 'background_color_filter');
-//        $browserPath = $this->get('liip_imagine.cache.manager')->getBrowserPath(realpath($this->getParameter('kernel.root_dir').'/../web/images/123.jpg'), 'background_color_filter');
-//
-//        $content = file_get_contents($browserPath);
-//        $response = new BinaryFileResponse($content);
-//        $response->headers->set('Content-Type', 'image/png');
-//        $response->headers->set('Content-Transfer-Encoding', 'binary');
-//        $response->headers->set('Content-Disposition', 'attachment; filename=asas.jpg');
-//
-//        return $response;
-
-        $runtimeConfig = ['thumbnail' => ['size' => [100, 100]]];
-//        $runtimeConfig['watermark'] = ['image' => $r];
-
-        return $this->render('default/last_bloc.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..'),
-            'runtimeConfig' => $runtimeConfig,
-        ]);
-    }
-
-    /**
      * @Route("image", name="image")
      * @param Request $request
      * @return array|BinaryFileResponse
      */
     public function imageAction(Request $request)
     {
-        $horizontalForm = $this->createFormBuilder()->add('horizontal', FileType::class)->getForm();
-        $verticalForm = $this->createFormBuilder()->add('vertical', FileType::class)->getForm();
+        $horizontalForm = $this->createFormBuilder()->add('horizontal', FileType::class)->add('submit', SubmitType::class)->getForm();
+        $verticalForm = $this->createFormBuilder()->add('vertical', FileType::class)->add('submit', SubmitType::class)->getForm();
         $horizontalForm->handleRequest($request);
         $verticalForm->handleRequest($request);
         if ($horizontalForm->isSubmitted() && $horizontalForm->isValid()) {
@@ -73,7 +36,7 @@ class DefaultController extends Controller
             $image1->move(realpath($this->getParameter('kernel.root_dir').'/../web/images/'), $fileName);
 
             $imageUploaded = realpath($this->getParameter('kernel.root_dir').'/../web/images/'.$fileName);
-            $rama = imagecreatefrompng(realpath($this->getParameter('kernel.root_dir').'/../web/images/rame2.png'));
+            $rama = imagecreatefrompng(realpath($this->getParameter('kernel.root_dir').'/../web/images/rame3.png'));
 
             $ramaWidth = imagesx($rama);
             $ramaHeight = imagesy($rama);
@@ -122,7 +85,7 @@ class DefaultController extends Controller
             $image1->move(realpath($this->getParameter('kernel.root_dir').'/../web/images/'), $fileName);
 
             $imageUploaded = realpath($this->getParameter('kernel.root_dir').'/../web/images/'.$fileName);
-            $rama = imagecreatefrompng(realpath($this->getParameter('kernel.root_dir').'/../web/images/rame3.png'));
+            $rama = imagecreatefrompng(realpath($this->getParameter('kernel.root_dir').'/../web/images/rame2.png'));
 
             $ramaWidth = imagesx($rama);
             $ramaHeight = imagesy($rama);

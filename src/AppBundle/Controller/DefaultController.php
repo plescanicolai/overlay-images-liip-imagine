@@ -5,7 +5,6 @@ namespace AppBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,101 +28,17 @@ class DefaultController extends Controller
         $verticalForm->handleRequest($request);
         if ($horizontalForm->isSubmitted() && $horizontalForm->isValid()) {
             $data = $horizontalForm->getData();
-            /** @var UploadedFile $image1 */
-            $image1 = $data['horizontal'];
-            $extension = $image1->guessExtension();
-            $fileName = md5(uniqid()).'.'.$extension;
-            $image1->move(realpath($this->getParameter('kernel.root_dir').'/../web/images/'), $fileName);
+            /** @var UploadedFile $imageAdd */
+            $imageAdd = $data['horizontal'];
 
-            $imageUploaded = realpath($this->getParameter('kernel.root_dir').'/../web/images/'.$fileName);
-            $rama = imagecreatefrompng(realpath($this->getParameter('kernel.root_dir').'/../web/images/rame3.png'));
-
-            $ramaWidth = imagesx($rama);
-            $ramaHeight = imagesy($rama);
-            $this->resizeImage($imageUploaded, realpath($this->getParameter('kernel.root_dir').'/../web/images/'), $fileName, $ramaHeight, $ramaWidth);
-
-            if ($extension == 'gif') {
-                $image = imagecreatefromgif($imageUploaded);
-            } elseif ($extension == "jpeg" or $extension == "jpg") {
-                $image = imagecreatefromjpeg($imageUploaded);
-            } elseif ($extension == 'png') {
-                $image = imagecreatefrompng($imageUploaded);
-            } else {
-                die("wrong extension");
-            }
-
-            imagecopyresampled($image, $rama, 0, 0, 0, 0, $ramaWidth, $ramaHeight, $ramaWidth, $ramaHeight);
-
-            switch ($extension) {
-                case 'png':
-                    imagepng($image, $imageUploaded);
-                    break;
-                case 'jpeg':
-                case 'jpg':
-                    imagejpeg($image, $imageUploaded, 90);
-                    break;
-                case 'gif':
-                    imagegif($image, $imageUploaded);
-                    break;
-                default:
-                    break;
-            }
-
-            $response = new BinaryFileResponse($imageUploaded);
-            $response->headers->set('Content-Type', 'image/png');
-            $response->headers->set('Content-Transfer-Encoding', 'binary');
-            $response->headers->set('Content-Disposition', 'attachment; filename='.$fileName);
-
-            return $response;
+            return $this->imageManipulation($imageAdd);
         }
         if ($verticalForm->isSubmitted() && $verticalForm->isValid()) {
             $data = $verticalForm->getData();
-            /** @var UploadedFile $image1 */
-            $image1 = $data['vertical'];
-            $extension = $image1->guessExtension();
-            $fileName = md5(uniqid()).'.'.$extension;
-            $image1->move(realpath($this->getParameter('kernel.root_dir').'/../web/images/'), $fileName);
+            /** @var UploadedFile $imageAdd */
+            $imageAdd = $data['vertical'];
 
-            $imageUploaded = realpath($this->getParameter('kernel.root_dir').'/../web/images/'.$fileName);
-            $rama = imagecreatefrompng(realpath($this->getParameter('kernel.root_dir').'/../web/images/rame2.png'));
-
-            $ramaWidth = imagesx($rama);
-            $ramaHeight = imagesy($rama);
-            $this->resizeImage($imageUploaded, realpath($this->getParameter('kernel.root_dir').'/../web/images/'), $fileName, $ramaHeight, $ramaWidth);
-
-            if ($extension == 'gif') {
-                $image = imagecreatefromgif($imageUploaded);
-            } elseif ($extension == "jpeg" or $extension == "jpg") {
-                $image = imagecreatefromjpeg($imageUploaded);
-            } elseif ($extension == 'png') {
-                $image = imagecreatefrompng($imageUploaded);
-            } else {
-                die("wrong extension");
-            }
-
-            imagecopyresampled($image, $rama, 0, 0, 0, 0, $ramaWidth, $ramaHeight, $ramaWidth, $ramaHeight);
-
-            switch ($extension) {
-                case 'png':
-                    imagepng($image, $imageUploaded);
-                    break;
-                case 'jpeg':
-                case 'jpg':
-                    imagejpeg($image, $imageUploaded, 90);
-                    break;
-                case 'gif':
-                    imagegif($image, $imageUploaded);
-                    break;
-                default:
-                    break;
-            }
-
-            $response = new BinaryFileResponse($imageUploaded);
-            $response->headers->set('Content-Type', 'image/png');
-            $response->headers->set('Content-Transfer-Encoding', 'binary');
-            $response->headers->set('Content-Disposition', 'attachment; filename='.$fileName);
-
-            return $response;
+            return $this->imageManipulation($imageAdd);
         }
 
         return $this->render('default/image.html.twig', ['horizontalForma' => $horizontalForm->createView(),
@@ -182,5 +97,54 @@ class DefaultController extends Controller
         }
 
         return $newPath;
+    }
+
+    private function imageManipulation(UploadedFile $imageAdd)
+    {
+        $extension = $imageAdd->guessExtension();
+        $fileName = md5(uniqid()).'.'.$extension;
+        $imagePath = realpath($this->getParameter('kernel.root_dir').'/../web/images/');
+        $imageAdd->move($imagePath, $fileName);
+
+        $imageUploaded = $imagePath.'/'.$fileName;
+        $rama = imagecreatefrompng($imagePath.'/rame3.png');
+
+        $ramaWidth = imagesx($rama);
+        $ramaHeight = imagesy($rama);
+        $this->resizeImage($imageUploaded, $imagePath, $fileName, $ramaHeight, $ramaWidth);
+
+        if ($extension == 'gif') {
+            $image = imagecreatefromgif($imageUploaded);
+        } elseif ($extension == "jpeg" or $extension == "jpg") {
+            $image = imagecreatefromjpeg($imageUploaded);
+        } elseif ($extension == 'png') {
+            $image = imagecreatefrompng($imageUploaded);
+        } else {
+            die("wrong extension");
+        }
+
+        imagecopyresampled($image, $rama, 0, 0, 0, 0, $ramaWidth, $ramaHeight, $ramaWidth, $ramaHeight);
+
+        switch ($extension) {
+            case 'png':
+                imagepng($image, $imageUploaded);
+                break;
+            case 'jpeg':
+            case 'jpg':
+                imagejpeg($image, $imageUploaded, 90);
+                break;
+            case 'gif':
+                imagegif($image, $imageUploaded);
+                break;
+            default:
+                break;
+        }
+
+        $response = new BinaryFileResponse($imageUploaded);
+        $response->headers->set('Content-Type', 'image/png');
+        $response->headers->set('Content-Transfer-Encoding', 'binary');
+        $response->headers->set('Content-Disposition', 'attachment; filename='.$fileName);
+
+        return $response;
     }
 }

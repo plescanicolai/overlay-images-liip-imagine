@@ -2,12 +2,18 @@
 
 namespace AppBundle\Controller;
 
+use Imagine\Image\Palette\RGB;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
+use Liip\ImagineBundle\Imagine\Filter\Loader\WatermarkFilterLoader;
+use Imagine\Gd\Image;
+use Imagine\Image\Point;
+use Imagine\Image\Box;
+use Imagine\Image\Metadata\MetadataBag;
 
 /**
  * Class DefaultController
@@ -15,6 +21,42 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class DefaultController extends Controller
 {
+    /**
+     * @Route("/")
+     */
+    public function indexAction(Request $request)
+    {
+//        $this->get('liip_imagine.controller')->filterAction($request, realpath($this->getParameter('kernel.root_dir').'/../web/images/1.jpg'), 'background_color_filter');
+        return $this->render('default/index.html.twig');
+    }
+
+    /**
+     * @Route("test", name="test")
+     */
+    public function testAction()
+    {
+        $imagePath = realpath($this->getParameter('kernel.root_dir').'/../web/images/1.jpg');
+        $ramePath =  realpath($this->getParameter('kernel.root_dir').'/../web/images/1.jpg');
+        $rt = imagecreatefromjpeg($imagePath);
+        $image = new Image($rt, new RGB(), new MetadataBag);
+
+        $rama = imagecreatefrompng(realpath($this->getParameter('kernel.root_dir').'/../web/images/rame3.png'));
+        $ramaWidth = imagesx($rama);
+        $ramaHeight = imagesy($rama);
+        $option = ['size' => ['width' => $ramaWidth, 'height' => $ramaHeight]];
+        $this->get('liip_imagine.filter.loader.resize')->load($image, [$option]);
+
+        $imageUploaded = $this->get('liip_imagine.filter.loader.watermark')->load($image, ['image' => '../web/images/rame3.png']);
+
+        imagejpeg($imageUploaded->getGdResource(), $ramePath, 90);
+
+        $response = new BinaryFileResponse($ramePath);
+        $response->headers->set('Content-Type', 'image/png');
+        $response->headers->set('Content-Transfer-Encoding', 'binary');
+        $response->headers->set('Content-Disposition', 'attachment; filename=1212.jpg');
+
+        return $response;
+    }
     /**
      * @Route("image", name="image")
      * @param Request $request

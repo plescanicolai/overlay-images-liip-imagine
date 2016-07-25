@@ -80,11 +80,10 @@ liip_imagine:
 #                relative_resize: { heighten: 60 }
 #                thumbnail: { size: [120, 90], mode: outbound }
 #                background: { size: [200, 120], position: center, color: '#0000F0' }
-#                watermark:
-#                    image: ../web/images/1.jpg
-#                    file: %kernel.root_dir%/Resources/water.jpg
-#                    size: 0.5
-#                    position: center
+                watermark:
+                    image: ../web/images/rame3.png
+                    size: 0.5
+                    position: center
 #                thumbnail: { size: [400, 300], mode: outbound }
 #                  watermark:
 #                      file: %kernel.root_dir%/Resources/misc/watermark.png

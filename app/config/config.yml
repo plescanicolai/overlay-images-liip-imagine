@@ -66,25 +66,3 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
-
-liip_imagine:
-    filter_sets:
-        background_color_filter:
-#            cache: ~
-#            data_loader: stream.shooting
-            filters:
-#                watermark:
-#                    image: ~
-#                grayscale: ~
-#                background: { color: '#0000F0' }
-#                relative_resize: { heighten: 60 }
-#                thumbnail: { size: [120, 90], mode: outbound }
-#                background: { size: [200, 120], position: center, color: '#0000F0' }
-                watermark:
-                    image: ../web/images/rame3.png
-                    size: 0.5
-                    position: center
-#                thumbnail: { size: [400, 300], mode: outbound }
-#                  watermark:
-#                      file: %kernel.root_dir%/Resources/misc/watermark.png
-#                      placement: { position: center, resize: stretch, space: "10%" }

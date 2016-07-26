@@ -52,6 +52,11 @@ class DefaultController extends Controller
         ]);
     }
 
+    /**
+     * @param UploadedFile $imageAdd
+     * @param string       $coverImage
+     * @return BinaryFileResponse
+     */
     private function imageCover(UploadedFile $imageAdd, $coverImage)
     {
         $extension = $imageAdd->guessExtension();
